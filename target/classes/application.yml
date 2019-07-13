@@ -1,0 +1,6 @@
+aliyun:
+    oss:
+        access-id: LTAI1SFmpwLnRwK1
+        accessKey-Secret: dan0LbdMafdzCKi2SdfnUjcmvqc4cI
+        bucket-name: liushuaid
+        endpoint: oss-cn-chengdu.aliyuncs.com

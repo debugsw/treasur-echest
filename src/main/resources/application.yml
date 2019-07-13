@@ -1,0 +1,6 @@
+aliyun:
+    oss:
+        access-id:
+        accessKey-Secret:
+        bucket-name:
+        endpoint: oss-cn-chengdu.aliyuncs.com
