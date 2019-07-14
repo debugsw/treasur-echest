@@ -1,5 +1,6 @@
 package com.liushuai.treasurechest.email;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.mail.EmailAttachment;
 import org.apache.commons.mail.HtmlEmail;
 import org.apache.commons.mail.MultiPartEmail;
@@ -13,40 +14,58 @@ import java.util.Date;
  * @Author ls
  * @Date 2019/7/13 22:11
  */
+@Slf4j
 public class MailUtils {
-    private String host = "debugsw@126.com";
+    private String host = "smtp.126.com";
     private int port = 25;
-    private String userName = "";
-    private String password = "";
-    private String receive = "shuai012192@126.com";
+    /**
+     * 发送邮箱
+     */
+    private String userName = "shuai012192@126.com";
+    /**
+     * 发送邮箱密码
+     */
+    private String password = " ";
+    /**
+     * 接收邮箱
+     */
+    private String receive = "debugsw@126.com";
 
     /**
      * 发送文本邮件
+     *
+     * @param sendUser
+     * @param sendPassword
+     * @param receiveUser
+     * @param theme
+     * @param msg
      */
-    public void sendTextMail() {
+    public void sendTextMail(String sendUser, String sendPassword, String receiveUser, String theme, String msg) {
         try {
             SimpleEmail mail = new SimpleEmail();
             // 设置邮箱服务器信息
             mail.setSmtpPort(port);
             mail.setHostName(host);
             // 设置密码验证器
-            mail.setAuthentication(userName, password);
+            mail.setAuthentication(sendUser, sendPassword);
             // 设置邮件发送者
-            mail.setFrom(userName);
+            mail.setFrom(sendUser);
             // 设置邮件接收者
-            mail.addTo(receive);
+            mail.addTo(receiveUser);
             // 设置邮件编码
             mail.setCharset("UTF-8");
             // 设置邮件主题
-            mail.setSubject("Test Email");
+            mail.setSubject(theme);
             // 设置邮件内容
-            mail.setMsg("this is a test Text mail");
+            mail.setMsg(msg);
             // 设置邮件发送时间
             mail.setSentDate(new Date());
             // 发送邮件
             mail.send();
+            log.debug("邮件发送成功");
         } catch (Exception e) {
             e.printStackTrace();
+            log.debug("邮件发送失败,请联系管理员", e);
         }
     }
 
@@ -159,6 +178,12 @@ public class MailUtils {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static void main(String[] args) {
+        MailUtils mailUtils = new MailUtils();
+        mailUtils.sendTextMail("", "", "debugsw@126.com", "预警邮件", "已经超过平预警线,请及时查看.");
+
     }
 
 
