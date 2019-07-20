@@ -2,7 +2,14 @@ package com.liushuai.treasurechest.cdkey;
 
 import java.util.Date;
 
-public class Redeem {
+
+
+/**
+ * @Description cdkey相关
+ * @Author ls
+ * @Date 2019/7/20 21:00
+ */
+public class CdkeyUtils {
 
     static String stringtable = "abcdefghijkmnpqrstuvwxyz23456789";
 
@@ -16,7 +23,7 @@ public class Redeem {
         System.out.println("=======================");
         create((byte) 1, 10000, 13, password);
 
-        VerifyCode("dmk4gq7pdv88b");
+        verifyCode("dmk4gq7pdv88b");
     }
 
     /**
@@ -49,35 +56,35 @@ public class Redeem {
             }
 
             //存储所有数据
-            ByteHapper byteHapper = ByteHapper.CreateBytes(fullcodelength);
-            byteHapper.AppendNumber(groupid).AppendNumber(i).AppendBytes(randbytes);
+            ByteUtils byteUtils = ByteUtils.createBytes(fullcodelength);
+            byteUtils.appendNumber(groupid).appendNumber(i).appendBytes(randbytes);
 
             //计算校验码 这里使用所有数据相加的总和与byte.max 取余
-            byte verify = (byte) (byteHapper.GetSum() % Byte.MAX_VALUE);
-            byteHapper.AppendNumber(verify);
+            byte verify = (byte) (byteUtils.getSum() % Byte.MAX_VALUE);
+            byteUtils.appendNumber(verify);
 
             //使用随机码与时间和ID进行异或
             for (int j = 0; j < 5; j++) {
-                byteHapper.bytes[j] = (byte) (byteHapper.bytes[j] ^ (byteHapper.bytes[5 + j % randcount]));
+                byteUtils.bytes[j] = (byte) (byteUtils.bytes[j] ^ (byteUtils.bytes[5 + j % randcount]));
             }
 
             //使用密码与所有数据进行异或来加密数据
             byte[] passwordbytes = password.getBytes();
-            for (int j = 0; j < byteHapper.bytes.length; j++) {
-                byteHapper.bytes[j] = (byte) (byteHapper.bytes[j] ^ passwordbytes[j % passwordbytes.length]);
+            for (int j = 0; j < byteUtils.bytes.length; j++) {
+                byteUtils.bytes[j] = (byte) (byteUtils.bytes[j] ^ passwordbytes[j % passwordbytes.length]);
             }
 
             //这里存储最终的数据
             byte[] bytes = new byte[codelength];
 
             //按6位一组复制给最终数组
-            for (int j = 0; j < byteHapper.bytes.length; j++) {
+            for (int j = 0; j < byteUtils.bytes.length; j++) {
                 for (int k = 0; k < 8; k++) {
                     int sourceindex = j * 8 + k;
                     int targetindex_x = sourceindex / convertByteCount;
                     int targetindex_y = sourceindex % convertByteCount;
                     byte placeval = (byte) Math.pow(2, k);
-                    byte val = (byte) ((byteHapper.bytes[j] & placeval) == placeval ? 1 : 0);
+                    byte val = (byte) ((byteUtils.bytes[j] & placeval) == placeval ? 1 : 0);
                     //复制每一个bit
                     bytes[targetindex_x] = (byte) (bytes[targetindex_x] | (val << targetindex_y));
                 }
@@ -99,7 +106,7 @@ public class Redeem {
      *
      * @param code
      */
-    public static void VerifyCode(String code) {
+    public static void verifyCode(String code) {
         byte[] bytes = new byte[code.length()];
 
         //首先遍历字符串从字符表中获取相应的二进制数据

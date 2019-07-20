@@ -1,43 +1,49 @@
 package com.liushuai.treasurechest.cdkey;
 
-public class ByteHapper {
+
+/**
+ * @Description cdkey相关
+ * @Author ls
+ * @Date 2019/7/20 21:00
+ */
+public class ByteUtils {
     //原始数组
     byte[] bytes;
     //记录当前写入到多少位
     int index;
 
-    private ByteHapper(int capacity) {
+    private ByteUtils(int capacity) {
         bytes = new byte[capacity];
         index = 0;
     }
 
-    public static ByteHapper CreateBytes(int capacity) {
-        ByteHapper byteHapper = new ByteHapper(capacity);
-        return byteHapper;
+    public static ByteUtils createBytes(int capacity) {
+        ByteUtils byteUtils = new ByteUtils(capacity);
+        return byteUtils;
     }
 
     //向数组中追加内容
-    public ByteHapper AppendNumber(long val) {
-        byte[] arr = Number2byte(val);
-        AppendBytes(arr);
+    public ByteUtils appendNumber(long val) {
+        byte[] arr = number2byte(val);
+        appendBytes(arr);
         return this;
     }
 
-    public ByteHapper AppendNumber(int val) {
-        byte[] arr = Number2byte(val);
-        AppendBytes(arr);
+    public ByteUtils appendNumber(int val) {
+        byte[] arr = number2byte(val);
+        appendBytes(arr);
         return this;
     }
 
-    public ByteHapper AppendNumber(short val) {
-        byte[] arr = Number2byte(val);
-        AppendBytes(arr);
+    public ByteUtils appendNumber(short val) {
+        byte[] arr = number2byte(val);
+        appendBytes(arr);
         return this;
     }
 
-    public ByteHapper AppendNumber(byte val) {
+    public ByteUtils appendNumber(byte val) {
         byte[] arr = new byte[]{val};
-        AppendBytes(arr);
+        appendBytes(arr);
         return this;
     }
 
@@ -46,7 +52,7 @@ public class ByteHapper {
      *
      * @return
      */
-    public int GetSum() {
+    public int getSum() {
         int ret = 0;
         for (int i = 0; i < bytes.length; i++) {
             ret += bytes[i];
@@ -55,7 +61,7 @@ public class ByteHapper {
     }
 
     //追加byte数组
-    public ByteHapper AppendBytes(byte[] arr) {
+    public ByteUtils appendBytes(byte[] arr) {
 
         for (byte i = 0; i < arr.length; i++) {
             bytes[index + i] = arr[i];
@@ -68,7 +74,7 @@ public class ByteHapper {
     /**
      * 将数字转换为byte数组
      */
-    public static byte[] Number2byte(long val) {
+    public static byte[] number2byte(long val) {
 
         byte[] arr = new byte[]{
                 (byte) ((val >> 56) & 0xFF),
@@ -84,7 +90,7 @@ public class ByteHapper {
         return arr;
     }
 
-    public static byte[] Number2byte(int val) {
+    public static byte[] number2byte(int val) {
 
         byte[] arr = new byte[]{
                 (byte) ((val >> 24) & 0xFF),
@@ -96,7 +102,7 @@ public class ByteHapper {
         return arr;
     }
 
-    public static byte[] Number2byte(short val) {
+    public static byte[] number2byte(short val) {
 
         byte[] arr = new byte[]{
                 (byte) ((val >> 8) & 0xFF),
