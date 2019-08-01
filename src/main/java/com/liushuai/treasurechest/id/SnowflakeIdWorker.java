@@ -1,5 +1,10 @@
 package com.liushuai.treasurechest.id;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 /**
  * @Description TODO
  * @Author ls
@@ -128,10 +133,15 @@ public class SnowflakeIdWorker {
     /** 测试 */
     public static void main(String[] args) {
         SnowflakeIdWorker idWorker = new SnowflakeIdWorker(0, 0);
-        for (int i = 0; i < 1000; i++) {
+        Set set = new HashSet();
+        List list = new ArrayList();
+        for (int i = 0; i < 100000; i++) {
             long id = idWorker.nextId();
-            System.out.println(id);
+            set.add(id);
+            list.add(id);
         }
+        System.out.println(set);
+        System.out.println(set.size());
     }
 
 }
