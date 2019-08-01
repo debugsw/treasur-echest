@@ -41,7 +41,8 @@ public class CdkeyUtils {
         int fullcodelength = codelength * convertByteCount / 8;
         //随机码对时间和id同时做异或处理
         //类型1，id4，随机码n,校验码1
-        int randcount = fullcodelength - 6;//随机码有多少个
+        //随机码有多少个
+        int randcount = fullcodelength - 6;
 
         //如果随机码小于0 不生成
         if (randcount <= 0) {
