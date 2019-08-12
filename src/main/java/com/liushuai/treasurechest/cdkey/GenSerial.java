@@ -13,9 +13,9 @@ public class GenSerial {
     private static final String Base32Alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789abcdefghjklmnpqrstuvwxyz";
 
     /**
-     * 生成新的序列号	<br>
-     * <p>生成规则：45位的数 （二进制）<br>
-     * 标识位  + 数据位 + 校验位 <br>
+     * 生成新的序列号
+     * 生成规则：45位的数 （二进制）
+     * 标识位  + 数据位 + 校验位
      * 然后将55位的数映射到用 ABCDEFGHJKLMNPQRSTUVWXYZ23456789 表示的序列号，要映射到32个字符中就是每5位代表一个字符(2^5=32)，
      * 所有生成的序列号是 45/5=9位。
      *
