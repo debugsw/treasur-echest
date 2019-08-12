@@ -1,7 +1,7 @@
 package com.liushuai.treasurechest.cdkey;
 
-import java.util.Date;
-
+import java.util.HashSet;
+import java.util.Set;
 
 
 /**
@@ -11,54 +11,52 @@ import java.util.Date;
  */
 public class CdkeyUtils {
 
-    static String stringtable = "abcdefghijkmnpqrstuvwxyz23456789";
+    static String stringTable = "ABCDEFGHIJKMNPQRSTUVWXYZ23456789";
 
+    /**
+     * 安全码
+     */
     final static String password = "dak3le2";
 
-    //从byte转为字符表索引所需要的位数
+    /**
+     * 从byte转为字符表索引所需要的位数
+     */
     final static int convertByteCount = 5;
-
-    public static void main(String[] args) throws Exception {
-        ShowTime();
-        System.out.println("=======================");
-        create((byte) 1, 10000, 13, password);
-
-        verifyCode("dmk4gq7pdv88b");
-    }
 
     /**
      * 生成兑换码
      * 这里每一次生成兑换码的最大数量为int的最大值即2147483647
      *
-     * @param groupid
-     * @param codecount
-     * @param codelength
+     * @param groupId
+     * @param codeCount
+     * @param codeLength
      * @param password
      * @return
      */
-    public static byte[] create(byte groupid, int codecount, int codelength, String password) {
+    public static Set<String> create(byte groupId, int codeCount, int codeLength, String password) {
         //8位的数据总长度
-        int fullcodelength = codelength * convertByteCount / 8;
+        int fullCodeLength = codeLength * convertByteCount / 8;
         //随机码对时间和id同时做异或处理
         //类型1，id4，随机码n,校验码1
         //随机码有多少个
-        int randcount = fullcodelength - 6;
+        int randCount = fullCodeLength - 6;
 
         //如果随机码小于0 不生成
-        if (randcount <= 0) {
+        if (randCount <= 0) {
             return null;
         }
-        for (int i = 0; i < codecount; i++) {
+        Set<String> set = new HashSet<>();
+        for (int i = 0; i < codeCount; i++) {
             //这里使用i作为code的id
             //生成n位随机码
-            byte[] randbytes = new byte[randcount];
-            for (int j = 0; j < randcount; j++) {
-                randbytes[j] = (byte) (Math.random() * Byte.MAX_VALUE);
+            byte[] randBytes = new byte[randCount];
+            for (int j = 0; j < randCount; j++) {
+                randBytes[j] = (byte) (Math.random() * Byte.MAX_VALUE);
             }
 
             //存储所有数据
-            ByteUtils byteUtils = ByteUtils.createBytes(fullcodelength);
-            byteUtils.appendNumber(groupid).appendNumber(i).appendBytes(randbytes);
+            ByteUtils byteUtils = ByteUtils.createBytes(fullCodeLength);
+            byteUtils.appendNumber(groupId).appendNumber(i).appendBytes(randBytes);
 
             //计算校验码 这里使用所有数据相加的总和与byte.max 取余
             byte verify = (byte) (byteUtils.getSum() % Byte.MAX_VALUE);
@@ -66,40 +64,39 @@ public class CdkeyUtils {
 
             //使用随机码与时间和ID进行异或
             for (int j = 0; j < 5; j++) {
-                byteUtils.bytes[j] = (byte) (byteUtils.bytes[j] ^ (byteUtils.bytes[5 + j % randcount]));
+                byteUtils.bytes[j] = (byte) (byteUtils.bytes[j] ^ (byteUtils.bytes[5 + j % randCount]));
             }
 
             //使用密码与所有数据进行异或来加密数据
-            byte[] passwordbytes = password.getBytes();
+            byte[] passwordBytes = password.getBytes();
             for (int j = 0; j < byteUtils.bytes.length; j++) {
-                byteUtils.bytes[j] = (byte) (byteUtils.bytes[j] ^ passwordbytes[j % passwordbytes.length]);
+                byteUtils.bytes[j] = (byte) (byteUtils.bytes[j] ^ passwordBytes[j % passwordBytes.length]);
             }
 
             //这里存储最终的数据
-            byte[] bytes = new byte[codelength];
+            byte[] bytes = new byte[codeLength];
 
             //按6位一组复制给最终数组
             for (int j = 0; j < byteUtils.bytes.length; j++) {
                 for (int k = 0; k < 8; k++) {
-                    int sourceindex = j * 8 + k;
-                    int targetindex_x = sourceindex / convertByteCount;
-                    int targetindex_y = sourceindex % convertByteCount;
-                    byte placeval = (byte) Math.pow(2, k);
-                    byte val = (byte) ((byteUtils.bytes[j] & placeval) == placeval ? 1 : 0);
+                    int sourceIndex = j * 8 + k;
+                    int targetIndex_x = sourceIndex / convertByteCount;
+                    int targetIndex_y = sourceIndex % convertByteCount;
+                    byte placeVal = (byte) Math.pow(2, k);
+                    byte val = (byte) ((byteUtils.bytes[j] & placeVal) == placeVal ? 1 : 0);
                     //复制每一个bit
-                    bytes[targetindex_x] = (byte) (bytes[targetindex_x] | (val << targetindex_y));
+                    bytes[targetIndex_x] = (byte) (bytes[targetIndex_x] | (val << targetIndex_y));
                 }
             }
 
             StringBuilder result = new StringBuilder();
             //编辑最终数组生成字符串
             for (int j = 0; j < bytes.length; j++) {
-                result.append(stringtable.charAt(bytes[j]));
+                result.append(stringTable.charAt(bytes[j]));
             }
-            System.out.println("out string : " + result.toString());
+            set.add(result.toString());
         }
-        ShowTime();
-        return null;
+        return set;
     }
 
     /**
@@ -107,65 +104,64 @@ public class CdkeyUtils {
      *
      * @param code
      */
-    public static void verifyCode(String code) {
+    public static String verifyCode(String code) {
         byte[] bytes = new byte[code.length()];
 
         //首先遍历字符串从字符表中获取相应的二进制数据
         for (int i = 0; i < code.length(); i++) {
-            byte index = (byte) stringtable.indexOf(code.charAt(i));
+            byte index = (byte) stringTable.indexOf(code.charAt(i));
             bytes[i] = index;
         }
 
         //还原数组
-        int fullcodelength = code.length() * convertByteCount / 8;
-        int randcount = fullcodelength - 6;//随机码有多少个
+        int fullCodeLength = code.length() * convertByteCount / 8;
+        //随机码有多少个
+        int randCount = fullCodeLength - 6;
 
-        byte[] fullbytes = new byte[fullcodelength];
-        for (int j = 0; j < fullbytes.length; j++) {
+        byte[] fullBytes = new byte[fullCodeLength];
+        for (int j = 0; j < fullBytes.length; j++) {
             for (int k = 0; k < 8; k++) {
-                int sourceindex = j * 8 + k;
-                int targetindex_x = sourceindex / convertByteCount;
-                int targetindex_y = sourceindex % convertByteCount;
+                int sourceIndex = j * 8 + k;
+                int targetIndex_x = sourceIndex / convertByteCount;
+                int targetIndex_y = sourceIndex % convertByteCount;
 
-                byte placeval = (byte) Math.pow(2, targetindex_y);
-                byte val = (byte) ((bytes[targetindex_x] & placeval) == placeval ? 1 : 0);
+                byte placeVal = (byte) Math.pow(2, targetIndex_y);
+                byte val = (byte) ((bytes[targetIndex_x] & placeVal) == placeVal ? 1 : 0);
 
-                fullbytes[j] = (byte) (fullbytes[j] | (val << k));
+                fullBytes[j] = (byte) (fullBytes[j] | (val << k));
             }
         }
 
         //解密，使用密码与所有数据进行异或来加密数据
-        byte[] passwordbytes = password.getBytes();
-        for (int j = 0; j < fullbytes.length; j++) {
-            fullbytes[j] = (byte) (fullbytes[j] ^ passwordbytes[j % passwordbytes.length]);
+        byte[] passwordBytes = password.getBytes();
+        for (int j = 0; j < fullBytes.length; j++) {
+            fullBytes[j] = (byte) (fullBytes[j] ^ passwordBytes[j % passwordBytes.length]);
         }
 
         //使用随机码与时间和ID进行异或
         for (int j = 0; j < 5; j++) {
-            fullbytes[j] = (byte) (fullbytes[j] ^ (fullbytes[5 + j % randcount]));
+            fullBytes[j] = (byte) (fullBytes[j] ^ (fullBytes[5 + j % randCount]));
         }
 
         //获取校验码 计算除校验码位以外所有位的总和
         int sum = 0;
-        for (int i = 0; i < fullbytes.length - 1; i++) {
-            sum += fullbytes[i];
+        for (int i = 0; i < fullBytes.length - 1; i++) {
+            sum += fullBytes[i];
         }
         byte verify = (byte) (sum % Byte.MAX_VALUE);
 
         //校验
-        if (verify == fullbytes[fullbytes.length - 1]) {
-            System.out.println(code + " : verify success!");
+        if (verify == fullBytes[fullBytes.length - 1]) {
+            return "success";
         } else {
-            System.out.println(code + " : verify failed!");
+            return "failed";
         }
-
     }
 
+    public static void main(String[] args) throws Exception {
+        System.out.println("=======================");
+        create((byte) 1, 1000000, 13, password);
 
-    public static void ShowTime() {
-        Date date = new Date();
-        long times = date.getTime();//时间戳
-        System.out.println("time  : " + times);
+        verifyCode("NCUGEQY5N4GKJ");
     }
-
 }
