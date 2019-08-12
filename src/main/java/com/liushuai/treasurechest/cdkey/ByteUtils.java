@@ -7,9 +7,13 @@ package com.liushuai.treasurechest.cdkey;
  * @Date 2019/7/20 21:00
  */
 public class ByteUtils {
-    //原始数组
+    /**
+     * 原始数组
+     */
     byte[] bytes;
-    //记录当前写入到多少位
+    /**
+     * 记录当前写入到多少位
+     */
     int index;
 
     private ByteUtils(int capacity) {
@@ -22,7 +26,12 @@ public class ByteUtils {
         return byteUtils;
     }
 
-    //向数组中追加内容
+    /**
+     * 向数组中追加内容
+     *
+     * @param val
+     * @return
+     */
     public ByteUtils appendNumber(long val) {
         byte[] arr = number2byte(val);
         appendBytes(arr);
@@ -60,7 +69,12 @@ public class ByteUtils {
         return ret;
     }
 
-    //追加byte数组
+    /**
+     * 追加byte数组
+     *
+     * @param arr
+     * @return
+     */
     public ByteUtils appendBytes(byte[] arr) {
 
         for (byte i = 0; i < arr.length; i++) {
@@ -73,6 +87,9 @@ public class ByteUtils {
 
     /**
      * 将数字转换为byte数组
+     *
+     * @param val
+     * @return
      */
     public static byte[] number2byte(long val) {
 
@@ -108,8 +125,6 @@ public class ByteUtils {
                 (byte) ((val >> 8) & 0xFF),
                 (byte) (val & 0xFF)
         };
-
         return arr;
-
     }
 }
