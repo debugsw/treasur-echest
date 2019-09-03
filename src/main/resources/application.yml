@@ -4,3 +4,11 @@ aliyun:
         accessKey-Secret:
         bucket-name:
         endpoint: oss-cn-chengdu.aliyuncs.com
+#异步线程池
+async:
+    executor:
+        thread:
+            core_pool_size : 10
+            max_pool_size : 50
+            queue_capacity : 1000
+            keep_alive_seconds : 300
