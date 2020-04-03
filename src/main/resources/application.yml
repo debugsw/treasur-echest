@@ -1,8 +1,8 @@
 aliyun:
     oss:
-        access-id:
-        accessKey-Secret:
-        bucket-name:
+        access-id: 123
+        accessKey-Secret: 321
+        bucket-name: 123
         endpoint: oss-cn-chengdu.aliyuncs.com
 #异步线程池
 async:
